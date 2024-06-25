@@ -28,12 +28,12 @@ process antiSmash {
 
    output:
    path("${uniqueId}/${uniqueId}.gbk"), emit: gbk
+   tuple val(uniqueId), path(gff), path(fasta), emit: orig
 
-   script:
+    script:
 
    """
-   antismash  ${fasta} --taxon ${taxon} --genefinding-gff3 ${repairedGff}  --output-dir ${uniqueId}  --output-basename ${uniqueId}
-   #singularity exec docker://antismash/standalone antismash ${fasta} --taxon ${taxon} --genefinding-gff3 ${repairedGff}  --output-dir ${uniqueId}  --output-basename ${uniqueId}
+   singularity exec docker://antismash/standalone antismash ${fasta} --taxon ${taxon} --genefinding-gff3 ${repairedGff}  --output-dir ${uniqueId}  --output-basename ${uniqueId}
 
    """
 
@@ -49,11 +49,11 @@ process makeGff {
 
 
    output:
-    path(${strain_id} + ".corrected.gff"), emit: gff
+    path("${uniqueId}.corrected.gff"), emit: gff
     val(uniqueId), emit: uniqueId
 
    """
-   processGffv1.pl ${gbk} ${gff} > ${strain_id}.corrected.gff
+   processGffv1.pl ${gbk} ${gff} > ${uniqueId}.corrected.gff
    """
   }
 
@@ -93,7 +93,7 @@ workflow {
 
     smash = antiSmash(repairedGff, params.organism)
 
-    processGff = makeGff(smash.gbk, gffAndFasta)
+    processGff = makeGff(smash)
 
     indexGff = sortAndIndexGff(processGff)
 
