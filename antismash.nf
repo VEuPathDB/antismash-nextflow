@@ -19,6 +19,8 @@ process repairGff {
 
 
 process antiSmash {
+   
+   maxForks = 5   
 
    input:
    tuple val(uniqueId), path(gff), path(fasta)
