@@ -1,0 +1,6 @@
+
+#!/usr/bin/env bash
+
+#set -uo pipefail
+
+bp_genbank2gff.pl --create --file ${gbk} --stdout > ${strain_id}.gff || true
