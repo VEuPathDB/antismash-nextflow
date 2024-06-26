@@ -16,7 +16,7 @@ my %geneToLongestTranscriptLength;
 my $gffio = Bio::Tools::GFF->new(-file => $gffFile, -gff_version => 3);
 
 while(my $feature = $gffio->next_feature()) {
-    next unless($feature->primary_tag() eq 'mRNA');
+    next unless($feature->primary_tag() eq 'mRNA' or $feature->primary_tag() eq 'transcript');
 
     my $transcriptLength = $feature->end - $feature->start + 1;
     my ($gene) = $feature->get_tag_values("Parent");
