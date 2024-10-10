@@ -55,8 +55,8 @@ while(my $feature = $gffio2->next_feature()) {
 
     # if this is the gene row OR this row's parent is the longest transcript for this gene
     if($geneToLongestTranscript{$id} ||
-       (defined $parent && $id eq $geneToLongestTranscript{$parent}) ||
-       (defined $geneId && defined $parent && $parent eq $geneToLongestTranscript{$geneId})) {
+        (defined $parent && $id eq $geneToLongestTranscript{$parent}) ||
+        (defined $geneId && defined $parent && $parent eq $geneToLongestTranscript{$geneId})) {
 
         $feature->gff_format(Bio::Tools::GFF->new(-gff_version => 3));
         print $feature->gff_string . "\n";
