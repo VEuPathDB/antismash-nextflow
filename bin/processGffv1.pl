@@ -17,27 +17,27 @@ my $gffFile = $ARGV[1]; # the GFF file here is the ORIGINAL GFF
 my $io = Bio::SeqIO->new(-file => $gbfile, -format => "genbank" );
 
 my %keepers = ("CDS" => 1,
-               "exon" => 1,
-               #"five_prime_UTR" => 1,
-               #"mRNA" => 1,
-               "protocluster" => 1,
-               "proto_core" => 1,
-               "region" => 1,
-               #"three_prime_UTR" => 1,
-               "cand_cluster" => 1
+                "exon" => 1,
+                #"five_prime_UTR" => 1,
+                #"mRNA" => 1,
+                "protocluster" => 1,
+                "proto_core" => 1,
+                "region" => 1,
+                #"three_prime_UTR" => 1,
+                "cand_cluster" => 1
 );
 
 my %geneInfo;
 my %transcriptsToGene;
 
 my %cdsExcludes = ("ID" => 1,
-                   "gene" => 1,
-                   "phase" => 1,
-                   "protein_source_id" => 1,
-                   "source" => 1,
-                   "transl_table" => 1,
-                   "translation" => 1,
-                   "Parent" => 1,
+                "gene" => 1,
+                "phase" => 1,
+                "protein_source_id" => 1,
+                "source" => 1,
+                "transl_table" => 1,
+                "translation" => 1,
+                "Parent" => 1,
     );
 
 

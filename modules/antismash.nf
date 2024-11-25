@@ -6,8 +6,8 @@ process repairGff {
     tuple val(uniqueId), path(gff), path(fasta)
 
     output:
-     tuple val(uniqueId), path(gff), path(fasta)
-     path("repaired.gff")
+    tuple val(uniqueId), path(gff), path(fasta)
+    path("repaired.gff")
 
     script:
     
@@ -19,25 +19,25 @@ process repairGff {
 
 
 process antiSmash {
-   errorStrategy 'ignore'   
-   maxForks = 10   
+  errorStrategy 'ignore'   
+  maxForks = 10   
 
-   input:
-   tuple val(uniqueId), path(gff), path(fasta)
-   path(repairedGff)
-   val(taxon)
+  input:
+    tuple val(uniqueId), path(gff), path(fasta)
+    path(repairedGff)
+    val(taxon)
 
 
-   output:
-   path("${uniqueId}/${uniqueId}.gbk"), emit: gbk
-   tuple val(uniqueId), path(gff), path(fasta), emit: orig
+  output:
+    path("${uniqueId}/${uniqueId}.gbk"), emit: gbk
+    tuple val(uniqueId), path(gff), path(fasta), emit: orig
 
     script:
 
-   """
-   singularity exec docker://antismash/standalone antismash ${fasta} --taxon ${taxon} --genefinding-gff3 ${repairedGff}  --output-dir ${uniqueId}  --output-basename ${uniqueId}
+    """
+    singularity exec docker://antismash/standalone antismash ${fasta} --taxon ${taxon} --genefinding-gff3 ${repairedGff}  --output-dir ${uniqueId}  --output-basename ${uniqueId}
 
-   """
+    """
 
 
   }
@@ -45,38 +45,38 @@ process antiSmash {
 
 process makeGff {
 
-   input:
-   path(gbk)
-   tuple val(uniqueId), path(gff), path(fasta)
+  input:
+    path(gbk)
+    tuple val(uniqueId), path(gff), path(fasta)
 
 
-   output:
+  output:
     path("${uniqueId}.corrected.gff"), emit: gff
     val(uniqueId), emit: uniqueId
 
-   """
-   processGffv1.pl ${gbk} ${gff} > ${uniqueId}.corrected.gff
-   """
+    """
+    processGffv1.pl ${gbk} ${gff} > ${uniqueId}.corrected.gff
+    """
   }
 
 
 process sortAndIndexGff {
-   
-   publishDir "${params.results}/Gff", pattern: '*gff*', mode: 'copy'
+
+  publishDir "${params.results}/Gff", pattern: '*gff*', mode: 'copy'
 
 
-   input:
+  input:
     path(gff)
     val(uniqueId)
 
-   output:
+  output:
     path('*gff*')
 
-   script:
+  script:
     template 'sortAndIndexGff.bash'
 
 
- }
+}
 
 /**
 * return a tuple of 2 files. one gff and one fasta
