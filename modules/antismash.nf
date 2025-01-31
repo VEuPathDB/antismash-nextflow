@@ -62,7 +62,7 @@ process makeGff {
 
 process sortAndIndexGff {
 
-  publishDir "${params.results}/Gff", pattern: '*gff*', mode: 'copy'
+  publishDir "${params.results}/Gff", pattern: '*gff.gz*', mode: 'copy'
 
 
   input:
