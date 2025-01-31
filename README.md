@@ -25,3 +25,8 @@ Example of the input can be found in the `data` directoty. The following files a
 * GFF files of the organisms to be analyzed (`See example in the data folder`)
 * A CSV file with there columns in the format [SampleName,SampleName.gff,SampleName.fasta] (`See input.csv in the data directory`)
 * The nextflow.config `see example in the parent directory`
+
+**<p align=left>Ouput Results</p>**
+Example of outputs can be found in the Results folder. For a sample (genome) analyzed the following files are generated.
+* A sorted zipped GFF files of the containing annotation of where identified secondary metabolites mapped to the genomes
+* An index file of the sorted GFF file
