@@ -41,7 +41,7 @@ flowchart TB
     end
     subgraph " "
     
-    v12[" "]
+    v12["Results"]
     end
     subgraph antismash
     v7([repairGff])
