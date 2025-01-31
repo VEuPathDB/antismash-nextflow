@@ -15,3 +15,13 @@ To run the workflow the following dependencies need to be installed
 
 * Alternatively the workflow can be run directly using nextflow which pull down the repo. 
 > `nextflow run VEuPathDB/antismash-nextflow -with-trace -c  <config_file> -r main`
+
+<br />
+
+
+**<p align=left>Input Data</p>**
+Example of the input can be found in the `data` directoty. The following files are required to run the workflow.
+* Fasta files of the organisms to be analyszd
+* GFF files of the organisms to be analyzed (`See example in the data folder`)
+* A CSV file with there columns in the format [SampleName,SampleName.gff,SampleName.fasta] (`See input.csv in the data directory`)
+* The nextflow.config `see example in the parent directory`
