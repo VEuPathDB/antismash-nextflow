@@ -28,5 +28,33 @@ Example of the input can be found in the `data` directoty. The following files a
 
 **<p align=left>Ouput Results</p>**
 Example of outputs can be found in the Results folder. For a sample (genome) analyzed the following files are generated.
-* A sorted zipped GFF files of the containing annotation of where identified secondary metabolites mapped to the genomes
-* An index file of the sorted GFF file
+* A sorted zipped GFF files of the containing annotation of where identified secondary metabolites mapped to the genomes `See example in Results directory under GFF`
+* An index file of the sorted GFF file `See example in Results directory under GFF`
+
+
+***<p align=center>Nextflow workflow diagram</p>*** 
+```mermaid
+flowchart TB
+    subgraph " "
+    v4["Fasta and GFF files"]
+    v8["Oraganism taxon"]
+    end
+    subgraph " "
+    
+    v12[" "]
+    end
+    subgraph antismash
+    v7([repairGff])
+    v9([antiSmash])
+    v10([makeGff])
+    v11([sortAndIndexGff])
+    v5(( ))
+    end
+    v4 --> v5
+    v5 --> v7
+    v7 --> v9
+    v8 --> v9
+    v9 --> v10
+    v10 --> v11
+    v11 --> v12
+```
