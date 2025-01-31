@@ -31,6 +31,7 @@ Example of outputs can be found in the Results folder. For a sample (genome) ana
 * A sorted zipped GFF files of the containing annotation of where identified secondary metabolites mapped to the genomes `See example in Results directory under GFF`
 * An index file of the sorted GFF file `See example in Results directory under GFF`
 
+<br />
 
 ***<p align=center>Nextflow workflow diagram</p>*** 
 ```mermaid
