@@ -1,6 +1,6 @@
 # antismash-nextflow
 This workflow uses [antiSMASH](https://antismash.secondarymetabolites.org/#!/about) to identify and annoate secondary metabolites biosynthesis gene clusters from fungal genomes in the VEuPathDB database. More details on the antiSMASH can be found [here](https://academic.oup.com/nar/article/51/W1/W46/7151336?login=true)
-It takes as input the oragnisms fasta files and GFF files specified in a csv file and the organism taxon. 
+It takes as input the oragnisms fasta files and GFF files along with n a csv file in which the organism gff and fasta file are listed. 
 
 **<p align=left>Get Started</p>**
 To run the workflow the following dependencies need to be installed
@@ -24,7 +24,7 @@ Example of the input can be found in the `data` directoty. The following files a
 * Fasta files of the organisms to be analyszd
 * GFF files of the organisms to be analyzed (`See example in the data folder`)
 * A CSV file with there columns in the format [SampleName,SampleName.gff,SampleName.fasta] (`See input.csv in the data directory`)
-* The nextflow.config `see example in the parent directory`
+* The nextflow.config which specifies the path to the require inputs and setting. `see example in the parent directory`
 
 **<p align=left>Ouput Results</p>**
 Example of outputs can be found in the Results folder. For a sample (genome) analyzed the following files are generated.
