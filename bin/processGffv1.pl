@@ -18,12 +18,9 @@ my $io = Bio::SeqIO->new(-file => $gbfile, -format => "genbank" );
 
 my %keepers = ("CDS" => 1,
                 "exon" => 1,
-                #"five_prime_UTR" => 1,
-                #"mRNA" => 1,
                 "protocluster" => 1,
                 "proto_core" => 1,
                 "region" => 1,
-                #"three_prime_UTR" => 1,
                 "cand_cluster" => 1
 );
 
