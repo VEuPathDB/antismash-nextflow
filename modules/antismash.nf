@@ -2,105 +2,83 @@
 nextflow.enable.dsl=2 
 
 process repairGff {
-    input:
-    tuple val(uniqueId), path(gff), path(fasta)
-
-    output:
-    tuple val(uniqueId), path(gff), path(fasta)
-    path("repaired.gff")
-
-    script:
-    
-    """
-    repairGff.pl $gff >repaired.gff
-    """
-
-  }
-
-
-process antiSmash {
-  errorStrategy 'ignore'   
-  maxForks = 10   
-
-  input:
-    tuple val(uniqueId), path(gff), path(fasta)
-    path(repairedGff)
-    val(taxon)
-
-
-  output:
-    path("${uniqueId}/${uniqueId}.gbk"), emit: gbk
-    tuple val(uniqueId), path(gff), path(fasta), emit: orig
-
-    script:
-
-    """
-    singularity exec docker://antismash/standalone antismash ${fasta} --taxon ${taxon} --genefinding-gff3 ${repairedGff}  --output-dir ${uniqueId}  --output-basename ${uniqueId}
-
-    """
-
-
-  }
-
-
-process makeGff {
-
-  input:
-    path(gbk)
-    tuple val(uniqueId), path(gff), path(fasta)
-
-
-  output:
-    path("${uniqueId}.corrected.gff"), emit: gff
-    val(uniqueId), emit: uniqueId
-
-    """
-    processGffv1.pl ${gbk} ${gff} > ${uniqueId}.corrected.gff
-    """
-  }
-
-
-process sortAndIndexGff {
-
-  publishDir "${params.results}/Gff", pattern: '*gff.gz*', mode: 'copy'
-
+  container = "bioperl/bioperl:stable"
 
   input:
     path(gff)
-    val(uniqueId)
 
   output:
-    path('*gff*')
+    tuple path(gff), path("repaired.gff")
+
+  script:    
+    """
+    repairGff.pl $gff > repaired.gff
+    """
+}
+
+process antiSmash {
+  container = 'antismash/standalone-lite:7.1.0'
+
+  input:
+    path(fasta)
+    val(organism)
+    tuple path(gff), path(repairedGff)
+
+  output:
+    tuple path("*.gbk"), path(gff)
 
   script:
-    template 'sortAndIndexGff.bash'
-
-
+    """
+    antismash ${fasta} --taxon ${organism} --genefinding-gff3 ${repairedGff} --output-dir . --output-basename output -c 1
+    """
 }
 
-/**
-* return a tuple of 2 files. one gff and one fasta
-*/
-def csvToTupleChannel(csv, inputDir) {
-    return Channel.fromPath(csv)
-        .splitCsv(header:false)
-        .map { row-> tuple(row[0], file(inputDir + "/" + row[1]), file(inputDir + "/" + row[2])) };
+process makeGff {
+  container = "bioperl/bioperl:stable"
+  
+  input:
+    tuple path(gbk), path(gff)
+
+  output:
+    path("corrected.gff")
+
+  script:
+    """
+    processGffv1.pl ${gbk} ${gff} > corrected.gff
+    """
 }
 
+process sortAndIndexGff {
+  container = "bioperl/bioperl:stable"
+  
+  publishDir "${params.resultDir}/Gff", mode: 'copy'
+
+  input:
+    path(correctedGff)
+
+  output:
+    path('sorted.gff*')
+
+  script:
+    """
+    sort -k1,1 -k4,4n ${correctedGff} > sorted.gff
+    cp sorted.gff sorted.gff.bkup
+    bgzip sorted.gff
+    mv sorted.gff.bkup sorted.gff
+    tabix -p gff sorted.gff.gz
+    """
+}
 
 workflow antismash {
 
   take:
-    inputCsv
-    inputDir
+    inputFasta
+    inputGff
+    
   main:
-    gffAndFasta = csvToTupleChannel(params.inputCsv, params.inputDir)
-    repairedGff = repairGff(gffAndFasta)
-
-    smash = antiSmash(repairedGff, params.organism)
-
+    repairedGff = repairGff(inputGff)
+    smash = antiSmash(inputFasta, params.organism, repairedGff)
     processGff = makeGff(smash)
-
     indexGff = sortAndIndexGff(processGff)
-
+    
 }
