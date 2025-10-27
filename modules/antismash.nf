@@ -17,7 +17,7 @@ process repairGff {
 }
 
 process antiSmash {
-  container = 'antismash/standalone-lite:7.1.0'
+  container = 'antismash/standalone:8.0.4'
 
   input:
     path(fasta)
@@ -25,11 +25,11 @@ process antiSmash {
     tuple path(gff), path(repairedGff)
 
   output:
-    tuple path("*.gbk"), path(gff)
+    tuple path("results/output.gbk"), path(gff)
 
   script:
     """
-    antismash ${fasta} --taxon ${organism} --genefinding-gff3 ${repairedGff} --output-dir . --output-basename output -c 1
+    antismash ${fasta} --taxon ${organism} --genefinding-gff3 ${repairedGff} --output-dir ./results --output-basename output -c 1
     """
 }
 
@@ -49,7 +49,7 @@ process makeGff {
 }
 
 process sortAndIndexGff {
-  container = "bioperl/bioperl:stable"
+  container = 'veupathdb/dnaseqanalysis'
   
   publishDir "${params.resultDir}/Gff", mode: 'copy'
 
