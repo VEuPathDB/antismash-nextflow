@@ -51,7 +51,7 @@ process makeGff {
 process sortAndIndexGff {
   container = 'veupathdb/dnaseqanalysis'
   
-  publishDir "${params.resultDir}/Gff", mode: 'copy'
+  publishDir "${params.resultDir}", mode: 'copy'
 
   input:
     path(correctedGff)
