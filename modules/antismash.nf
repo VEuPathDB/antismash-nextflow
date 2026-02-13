@@ -17,7 +17,7 @@ process repairGff {
 }
 
 process antiSmash {
-  container = 'antismash/standalone:8.0.4'
+  container 'antismash/standalone:8.0.4'
 
   input:
     path(fasta)
@@ -49,7 +49,7 @@ process makeGff {
 }
 
 process sortAndIndexGff {
-  container = 'veupathdb/dnaseqanalysis'
+  container 'veupathdb/dnaseqanalysis'
   
   publishDir "${params.resultDir}", mode: 'copy'
 
