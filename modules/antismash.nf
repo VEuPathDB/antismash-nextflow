@@ -49,7 +49,7 @@ process makeGff {
 }
 
 process sortAndIndexGff {
-  container 'veupathdb/dnaseqanalysis'
+  container 'biocontainers/tabix:v1.9-11-deb_cv1'
   
   publishDir "${params.resultDir}", mode: 'copy'
 
@@ -57,15 +57,15 @@ process sortAndIndexGff {
     path(correctedGff)
 
   output:
-    path('sorted.gff*')
+    path('antismash.gff*')
 
   script:
     """
-    sort -k1,1 -k4,4n ${correctedGff} > sorted.gff
-    cp sorted.gff sorted.gff.bkup
-    bgzip sorted.gff
-    mv sorted.gff.bkup sorted.gff
-    tabix -p gff sorted.gff.gz
+    sort -k1,1 -k4,4n ${correctedGff} > antismash.gff
+    cp antismash.gff antismash.gff.bkup
+    bgzip antismash.gff
+    mv antismash.gff.bkup antismash.gff
+    tabix -p gff antismash.gff.gz
     """
 }
 
