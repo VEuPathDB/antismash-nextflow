@@ -49,7 +49,7 @@ process makeGff {
 }
 
 process sortAndIndexGff {
-  container 'staphb/htslib'
+  container 'biocontainers/tabix:v1.9-11-deb_cv1'
   
   publishDir "${params.resultDir}", mode: 'copy'
 
