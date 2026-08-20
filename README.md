@@ -1,61 +1,44 @@
 # antismash-nextflow
-This workflow uses [antiSMASH](https://antismash.secondarymetabolites.org/#!/about) to identify and annoate secondary metabolites biosynthesis gene clusters from fungal genomes in the VEuPathDB database. More details on the antiSMASH can be found [here](https://academic.oup.com/nar/article/51/W1/W46/7151336?login=true)
-It takes as input the oragnisms fasta files and GFF files along with n a csv file in which the organism gff and fasta file are listed. 
 
-**<p align=left>Get Started</p>**
-To run the workflow the following dependencies need to be installed
+Nextflow pipeline that runs [antiSMASH](https://antismash.secondarymetabolites.org/#!/about) to identify and annotate secondary metabolite biosynthesis gene clusters in fungal genomes.
 
-* Docker
-> `https://docs.docker.com/engine/install/`
-* Nextflow
-> `curl https://get.nextflow.io | bash`
+## Overview
 
-* The pull the git hub repo using the following command
-> `git pull https://github.com/VEuPathDB/antismash-nextflow.git`
+Secondary metabolite gene clusters (e.g. polyketide synthases, non-ribosomal peptide synthetases) are important functional annotations for fungal genomes in VEuPathDB (FungiDB). This pipeline runs antiSMASH against a genome's assembly and existing gene models, repairs and reconciles the antiSMASH output against the original GFF, and produces a sorted, indexed GFF3 of predicted secondary metabolite clusters that is loaded into the VEuPathDB genome browser and annotation pipeline.
 
-* Alternatively the workflow can be run directly using nextflow which pull down the repo. 
-> `nextflow run VEuPathDB/antismash-nextflow -with-trace -c  <config_file> -r main`
+## Requirements
 
-<br />
+- [Nextflow](https://www.nextflow.io/)
+- [Singularity](https://sylabs.io/singularity/) — `nextflow.config` enables Singularity (`singularity { enabled = true }`) and binds a local antiSMASH database directory (`/project/eupathdblab/software_databases/antismash-8.0.4`) into the container; the pipeline is configured by default to run on an LSF cluster (`process.executor = 'lsf'`)
 
+## Usage
 
-**<p align=left>Input Data</p>**
-Example of the input can be found in the `data` directoty. The following files are required to run the workflow.
-* Fasta files of the organisms to be analyszd
-* GFF files of the organisms to be analyzed (`See example in the data folder`)
-* A CSV file with there columns in the format [SampleName,SampleName.gff,SampleName.fasta] (`See input.csv in the data directory`)
-* The nextflow.config which specifies the path to the require inputs and setting. `see example in the parent directory`
-
-**<p align=left>Ouput Results</p>**
-Example of outputs can be found in the Results folder. For a sample (genome) analyzed the following files are generated.
-* A sorted zipped GFF files of the containing annotation of where identified secondary metabolites mapped to the genomes `See example in Results directory under GFF`
-* An index file of the sorted GFF file `See example in Results directory under GFF`
-
-<br />
-
-***<p align=center>Nextflow workflow diagram</p>*** 
-```mermaid
-flowchart TB
-    subgraph " "
-    v4["Fasta and GFF files"]
-    v8["Oraganism taxon"]
-    end
-    subgraph " "
-    
-    v12["Results"]
-    end
-    subgraph antismash
-    v7([repairGff])
-    v9([antiSmash])
-    v10([makeGff])
-    v11([sortAndIndexGff])
-    v5(( ))
-    end
-    v4 --> v5
-    v5 --> v7
-    v7 --> v9
-    v8 --> v9
-    v9 --> v10
-    v10 --> v11
-    v11 --> v12
 ```
+nextflow run VEuPathDB/antismash-nextflow -r main \
+  --fasta /path/to/genome.fasta \
+  --gff /path/to/genome.gff \
+  --organism fungi \
+  --resultDir /path/to/results \
+  -resume -C my.config
+```
+
+The pipeline has a single, unnamed entry point (`workflow { ... }` in `main.nf`), so no `-entry` flag is needed.
+
+Steps performed:
+1. `repairGff` — runs `repairGff.pl` to identify the longest transcript per gene and repair the input GFF3 so antiSMASH's gene-finding step can consume it.
+2. `antiSmash` — runs `antismash` against the genome FASTA, using the repaired GFF3 for gene-finding and `params.organism` to select the antiSMASH taxon model (e.g. `fungi`).
+3. `makeGff` — runs `processGffv1.pl` to parse the antiSMASH GenBank output (`output.gbk`) and translate the identified clusters, CDS, and regions back into GFF3 coordinates against the original gene models.
+4. `sortAndIndexGff` — sorts the resulting GFF3, compresses it with `bgzip`, and indexes it with `tabix`, publishing `antismash.gff.gz` (and its `.tbi` index) to `params.resultDir`.
+
+## Key Parameters
+
+| Parameter | Description | Default |
+|---|---|---|
+| `params.fasta` | Path to the genome assembly FASTA | `data/input.fasta` |
+| `params.gff` | Path to the genome's GFF3 gene models | `data/input.gff` |
+| `params.organism` | antiSMASH taxon model to use (e.g. `fungi`) | `fungi` |
+| `params.resultDir` | Directory the final indexed GFF is published to | `results` |
+
+## Output
+
+A sorted, bgzip-compressed GFF3 file, `antismash.gff.gz`, plus its `tabix` index (`antismash.gff.gz.tbi`), published to `params.resultDir`. The GFF3 annotates predicted secondary metabolite biosynthesis gene clusters (protoclusters, candidate clusters, and their CDS/region features) mapped onto the genome's original coordinate system.
