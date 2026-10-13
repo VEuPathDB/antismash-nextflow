@@ -8,22 +8,22 @@ include { antismash } from  './modules/antismash.nf'
 
 //======================================
 
+workflow {
   if(!params.fasta) {
-    throw new Exception("Missing parameter params.inputDir")
+    error "Missing parameter params.inputDir"
   }
   if(!params.gff) {
-    throw new Exception("Missing parameter params.inputCsv")
+    error "Missing parameter params.inputCsv"
   }
   if(!params.organism) {
-    throw new Exception("Missing parameter params.organism")
+    error "Missing parameter params.organism"
   }
   if(!params.resultDir) {
-    throw new Exception("Missing parameter params.resultDir")
+    error "Missing parameter params.resultDir"
   }
 
-inputFasta = Channel.fromPath(params.fasta, checkIfExists:true)
-inputGff = Channel.fromPath(params.gff, checkIfExists:true)
+  inputFasta = channel.fromPath(params.fasta, checkIfExists:true)
+  inputGff = channel.fromPath(params.gff, checkIfExists:true)
 
-workflow {
     antismash(inputFasta, inputGff)
 }
