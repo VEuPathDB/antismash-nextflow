@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2 
 
 process repairGff {
-  container = "bioperl/bioperl:stable"
+  container "bioperl/bioperl:stable"
 
   input:
     path(gff)
@@ -34,7 +34,7 @@ process antiSmash {
 }
 
 process makeGff {
-  container = "bioperl/bioperl:stable"
+  container "bioperl/bioperl:stable"
   
   input:
     tuple path(gbk), path(gff)
