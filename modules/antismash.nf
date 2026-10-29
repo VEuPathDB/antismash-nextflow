@@ -17,7 +17,7 @@ process repairGff {
 }
 
 process antiSmash {
-  container 'antismash/standalone:8.0.4'
+  container 'antismash/standalone-lite:8.0.4'
 
   input:
     path(fasta)
